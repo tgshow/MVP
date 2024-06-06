@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="./../../assets/style.css">
+    <title>Quiz de Matemática</title>
+</head>
+<body>
+    <div class="container quiz-container">
+        <h2 class="text-center">Quiz de Matemática</h2>
+        <div id="quiz">
+        </div>
+        <button class="btn btn-primary mt-3" onclick="submitQuiz()">Enviar Respostas</button>
+        <div id="result" class="mt-3"></div>
+        <button>
+            <a href="1.html">
+                <img src="./../node_modules1/bootstrap-icons/icons/house.svg" alt="">
+            </a>
+        </button>
+    </div>
+    <script>
+        const quizData = [
+            {
+                topic: "Razão e Proporção",
+                question: "Qual é a razão entre 6 e 12?",
+                options: ["1:2", "2:3", "1:3", "1:4"],
+                correct: 0
+            },
+            {
+                topic: "Equações",
+                question: "Qual é a solução da equação x + 3 = 8?",
+                options: ["5", "4", "7", "6"],
+                correct: 0
+            },
+            {
+                topic: "Geometria",
+                question: "Qual é a área de um quadrado com lado 4?",
+                options: ["12", "16", "8", "24"],
+                correct: 1
+            },
+            {
+                topic: "Frações",
+                question: "Qual é o resultado de 3/4 + 1/4?",
+                options: ["1/2", "1", "3/4", "1/4"],
+                correct: 2
+            },
+            {
+                topic: "Funções",
+                question: "Qual é o valor de f(2) se f(x) = 2x + 1?",
+                options: ["3", "4", "5", "6"],
+                correct: 3
+            },
+            {
+                topic: "Probabilidade",
+                question: "Qual é a probabilidade de obter um número par ao lançar um dado justo?",
+                options: ["1/2", "1/3", "1/4", "1/6"],
+                correct: 0
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz');
+
+        function loadQuiz() {
+            quizContainer.innerHTML = ''; // Limpa qualquer conteúdo existente
+            quizData.forEach((currentQuestion, questionNumber) => {
+                const answers = currentQuestion.options.map((option, index) => `
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="question${questionNumber}" id="question${questionNumber}${index}" value="${index}">
+                        <label class="form-check-label" for="question${questionNumber}${index}">
+                            ${option}
+                        </label>
+                    </div>`
+                ).join('');
+
+                const questionElement = document.createElement('div');
+                questionElement.className = 'question mb-4';
+                questionElement.innerHTML = `
+                    <h5>${currentQuestion.topic}: ${currentQuestion.question}</h5>
+                    <div class="answers">${answers}</div>`;
+                quizContainer.appendChild(questionElement);
+            });
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            const incorrectAnswers = [];
+
+            quizData.forEach((currentQuestion, questionNumber) => {
+                const selector = `input[name=question${questionNumber}]:checked`;
+                const userAnswer = (document.querySelector(selector) || {}).value;
+                if (parseInt(userAnswer) === currentQuestion.correct) {
+                    score++;
+                } else {
+                    incorrectAnswers.push({
+                        question: currentQuestion.question,
+                        correctAnswer: currentQuestion.options[currentQuestion.correct],
+                        userAnswer: userAnswer !== undefined ? currentQuestion.options[userAnswer] : 'Não respondida'
+                    });
+                }
+            });
+
+            let resultHtml = `<h4>Você acertou ${score} de ${quizData.length} questões.</h4>`;
+            if (incorrectAnswers.length > 0) {
+                resultHtml += '<h5>Questões incorretas:</h5><ul>';
+                incorrectAnswers.forEach(answer => {
+                    resultHtml += `<li><strong>Pergunta:</strong> ${answer.question}<br>
+                                   <strong>Resposta correta:</strong> ${answer.correctAnswer}<br>
+                                   <strong>Sua resposta:</strong> ${answer.userAnswer}</li><br>`;
+                });
+                resultHtml += '</ul>';
+            }
+
+            document.getElementById('result').innerHTML = resultHtml;
+        }
+
+        loadQuiz();
+    </script>
+</body>
+</html>
